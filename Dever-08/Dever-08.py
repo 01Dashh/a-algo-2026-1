@@ -1,0 +1,49 @@
+import heapq
+
+def algoritmo_prim(grafo, vertice_inicial):
+    mst = []
+    visitados = set([vertice_inicial])
+    
+    # Inicializa a fila de prioridade com as arestas do vértice inicial
+    arestas = [
+        (peso, vertice_inicial, destino)
+        for destino, peso in grafo[vertice_inicial].items()
+    ]
+    heapq.heapify(arestas)
+    
+    custo_total = 0
+
+    # Enquanto houver arestas na fila e nem todos os vértices foram visitados
+    while arestas and len(visitados) < len(grafo):
+        peso, origem, destino = heapq.heappop(arestas)
+        
+        # Se o vértice de destino ainda não foi visitado, adicionamos à MST
+        if destino not in visitados:
+            visitados.add(destino)
+            mst.append((origem, destino, peso))
+            custo_total += peso
+            
+            # Adiciona as novas arestas do vértice recém-descoberto à fila
+            for proximo_destino, proximo_peso in grafo[destino].items():
+                if proximo_destino not in visitados:
+                    heapq.heappush(arestas, (proximo_peso, destino, proximo_destino))
+                    
+    return mst, custo_total
+
+# Definição do grafo baseado na imagem
+grafo = {
+    'A': {'B': 2, 'C': 6, 'D': 3},
+    'B': {'A': 2, 'D': 5},
+    'C': {'A': 6, 'D': 4},
+    'D': {'A': 3, 'B': 5, 'C': 4}
+}
+
+# Executando o algoritmo começando pelo vértice 'A'
+arestas_mst, custo = algoritmo_prim(grafo, 'A')
+
+# Exibindo os resultados
+print("### Árvore Geradora Mínima (MST) ###\n")
+for origem, destino, peso in arestas_mst:
+    print(f"Vértice de Origem: {origem} | Vértice de Destino: {destino} | Peso: {peso}")
+
+print(f"\nCusto Total (Soma dos pesos): {custo}")
